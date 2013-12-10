@@ -1,0 +1,39 @@
+{
+	"name": "carbon",
+	"version": "0.1.0",
+	"description": "4X space web browser game",
+	"keywords": [],
+	"homepage": "https://github.com/takteel/carbon",
+	"bugs": {
+		"url": "http://github.com/takteel/carbon/issues"
+	},
+	"licenses" : [ { "type": "LGPL" } ],
+	"author": {
+		"name": "xavier guillaume",
+		"email": "xavierguillaume@hotmail.fr"
+	},
+	"contributors": [ {
+			"name": "nicoulaie vernouillet",
+			"email": "neoliath@gmail.com"
+		}
+	],
+	"main": "main.js",
+	"bin": { "web": "./web" },
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/takteel/carbon.git"
+	},
+	"scripts": {
+		"start": "nodemon main.js"
+	},
+	"config": {},
+	"dependencies": {
+		"express": "~3.4.6",
+		"ejs": "~0.8.5",
+		"less-middleware": "~0.1.14"
+	},
+	"devDependencies": {
+		"nodemon": "~0.7.10"
+	},
+	"private": true
+}
