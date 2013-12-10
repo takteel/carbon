@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<title><%= title %></title>
+	<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link rel='stylesheet' href='/stylesheets/style.min.css' />
+</head>
+<body>
+	<h1><%= title %></h1>
+	<p>Welcome to <%= title %></p>
+	<ul>
+		<% for(var i = 0; i < routes.length; i++) { %>
+		<li><a href="<%= routes[i].path %>"><%= routes[i].path %></a></li>
+		<% } %>
+	</ul>
+	<input name="frameworks" list="frameworks" />
+
+	<datalist id="frameworks">
+		<option value="MooTools"/>
+		<option value="Moobile"/>
+		<option value="Dojo Toolkit"/>
+		<option value="jQuery"/>
+		<option value="YUI"/>
+	</datalist>
+	<a href="tel:1-408-555-5555">1-408-555-5555</a>
+	<a href="sms:1-408-555-1212">New SMS Message</a>
+	<a href="/files/adlafjlxjewfasd89asd8f.pdf" download="expenses.pdf">Download Your Expense Report</a>
+</body>
+</html>
