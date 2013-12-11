@@ -4,9 +4,11 @@ var settings = require('./settings');
 
 var http = require('http');
 var express = require('express');
+var params = require('express-params');
 var path = require('path');
 
 var app = express();
+params.extend(app);
 
 if (process.argv.length > 2) {
 	if (/^\d+$/.test(process.argv[2])) {
@@ -38,6 +40,11 @@ if ('development' == app.get('env')) {
 
 app.get('/', function(req, res) {
 	res.render('index', { title: 'index', routes: app.routes.get });
+});
+
+app.param(':id', /^\d+$/);
+app.get('/planet/:id', function(req, res) {
+	res.render('planet', { title: 'planet', id: req.params.id });
 });
 
 http.createServer(app).listen(app.get('port'), function() {
