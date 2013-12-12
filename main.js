@@ -1,24 +1,15 @@
 "use strict";
 
 var settings = require('./settings');
-var Planet = require('./planet').Planet;
-
-var oldPlanet = {
-	version: "0.0.1",
-	name:"titi"
-};
-
-var newPlanet = new Planet();
-var newPlanetFromOld = new Planet({srcObject:oldPlanet});
-console.log("new", newPlanet);
-console.log("old", newPlanetFromOld);
-console.log(JSON.stringify(newPlanet));
-console.log(JSON.stringify(newPlanetFromOld));
-
 var http = require('http');
 var express = require('express');
 var params = require('express-params');
 var path = require('path');
+var Planet = require('./planet').Planet;
+var extendObject = require('./object').extend;
+var util = require('util');
+
+extendObject(Object);
 
 var app = express();
 params.extend(app);
@@ -31,6 +22,34 @@ if (process.argv.length > 2) {
 		console.log('illegal port');
 	}
 }
+
+var planets = [];
+
+planets.push({ id:123, name:'toto' });
+
+planets.findOne = function (params) {
+	var properties = Object.getOwnPropertyNames(params);
+
+	for (var elementIt = 0, elementEnd = this.length; elementIt < elementEnd; ++elementIt) {
+		var match = true;
+		var element = this[elementIt];
+
+		for (var propertyIt = 0, propertyEnd = properties.length; propertyIt < propertyEnd; ++propertyIt) {
+			var propertyName = properties[propertyIt];
+
+			if (!(propertyName in element) || (params[propertyName] !== element[propertyName])) {
+				match = false;
+				break ;
+			}
+		}
+
+		if (match) {
+			return element;
+		}
+	}
+
+	return undefined;
+};
 
 app.set('port', settings.port);
 app.set('views', __dirname + '/views');
@@ -55,9 +74,34 @@ app.get('/', function(req, res) {
 	res.render('index', { title: 'index', routes: app.routes.get });
 });
 
+app.get('/planet', function(req, res) {
+	res.format({
+		'text/plain': function () {
+		},
+		'text/html': function () {
+			res.render('planets-list', { title: 'planets', planets: planets });
+		},
+		'application/json': function () {
+			res.json(planets);
+		}
+	});
+});
+
 app.param(':id', /^\d+$/);
 app.get('/planet/:id', function(req, res) {
-	res.render('planet', { title: 'planet', id: req.params.id });
+	var planet = planets.findOne({ id: parseInt(req.params.id[0]) });
+	console.log(planet);
+
+	res.format({
+		'text/plain': function () {
+		},
+		'text/html': function () {
+			res.render('planet', { title: 'planet', planet: planet });
+		},
+		'application/json': function () {
+			res.json(planets);
+		}
+	});
 });
 
 http.createServer(app).listen(app.get('port'), function() {

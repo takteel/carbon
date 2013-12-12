@@ -5,6 +5,30 @@ function type(obj){
     return Object.prototype.toString.call(obj).slice(8, -1);
 }
 
+var MakeContracts = function (cls) {
+	var util = require('util');
+
+	console.log('make contracts class', util.inspect(cls));
+	console.log('make contracts class.prototype', util.inspect(cls.prototype));
+
+	return cls;
+}
+
+var ContractObject = (function () {
+	function ContractObject(p0) {
+	}
+	ContractObject.preconditions = [];
+
+	ContractObject.prototype.test = function (p0, p1) {
+
+	};
+
+	ContractObject.prototype.test.preconditions = [];
+	ContractObject.prototype.test.postconditions = [];
+
+	return MakeContracts(ContractObject);
+})();
+
 var Planet = (function () {
 	function Planet(params) {
 		if (params && params.srcObject !== undefined) {
