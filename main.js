@@ -1,6 +1,19 @@
 "use strict";
 
 var settings = require('./settings');
+var Planet = require('./planet').Planet;
+
+var oldPlanet = {
+	version: "0.0.1",
+	name:"titi"
+};
+
+var newPlanet = new Planet();
+var newPlanetFromOld = new Planet({srcObject:oldPlanet});
+console.log("new", newPlanet);
+console.log("old", newPlanetFromOld);
+console.log(JSON.stringify(newPlanet));
+console.log(JSON.stringify(newPlanetFromOld));
 
 var http = require('http');
 var express = require('express');
