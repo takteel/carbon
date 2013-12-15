@@ -6,10 +6,9 @@ var express = require('express');
 var params = require('express-params');
 var path = require('path');
 var Planet = require('./planet').Planet;
-var extendObject = require('./object').extend;
-var util = require('util');
+var contract = require('./contract');
 
-extendObject(Object);
+var util = require('util');
 
 var app = express();
 params.extend(app);
