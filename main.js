@@ -3,15 +3,22 @@
 var settings = require('./settings');
 var http = require('http');
 var express = require('express');
-var params = require('express-params');
-var path = require('path');
-var Planet = require('./planet').Planet;
-var contract = require('./contract');
 
-var util = require('util');
+var express_params = require('express-params');
+var express_namespace = require('express-namespace');
 
 var app = express();
-params.extend(app);
+
+express_params.extend(app);
+
+var path = require('path');
+
+/*
+var Planet = require('./planet').Planet;
+var contract = require('./contract');
+*/
+
+var util = require('util');
 
 if (process.argv.length > 2) {
 	if (/^\d+$/.test(process.argv[2])) {
@@ -73,11 +80,12 @@ app.get('/', function(req, res) {
 	res.render('index', { title: 'index', routes: app.routes.get });
 });
 
-app.get('/planet', function(req, res) {
+app.get('/planet/', function(req, res) {
 	res.format({
 		'text/plain': function () {
 		},
 		'text/html': function () {
+			console.log(req.params);
 			res.render('planets-list', { title: 'planets', planets: planets });
 		},
 		'application/json': function () {
@@ -86,6 +94,7 @@ app.get('/planet', function(req, res) {
 	});
 });
 
+/*
 app.param(':id', /^\d+$/);
 app.get('/planet/:id', function(req, res) {
 	var planet = planets.findOne({ id: parseInt(req.params.id[0]) });
@@ -102,7 +111,75 @@ app.get('/planet/:id', function(req, res) {
 		}
 	});
 });
+*/
 
+var OBJECT_ID = /^[0-9a-f]{24}$/;
+var OBJECT_NAME = /^[a-zA-Z][a-zA-Z0-9_\-]{3,14}[a-zA-Z0-9]$/;
+
+var CHARACTER_NAME = /^[A-Z][a-zA-Z0-9]{4,14}[a-zA-Z0-9]$/;
+
+app.param('characterName', CHARACTER_NAME);
+
+app.namespace('/character/', function () {
+	app.get(':characterName/', function (req, res) {
+		res.send('GET character ' + req.params.characterName);
+	});
+	app.del(':characterName/', function (req, res){
+		res.send('DELETE character ' + req.params.characterName);
+	});
+});
+
+var GALAXY_NAME = /^[A-Z1-9][A-Z1-9\-]{3,14}[A-Z1-9]$/;
+var REGION_NAME = /^[A-Z1-9][A-Z1-9\-]{3,14}[A-Z1-9]$/;
+
+app.param('galaxyName', GALAXY_NAME);
+app.param('regionName', REGION_NAME);
+
+app.namespace('/api', function () {
+	app.namespace('/galaxy', function () {
+		app.get('/', function (req, res) {
+			res.send('GET all galaxies');
+		});
+
+		app.namespace('/:galaxyName', function () {
+			app.get('/', function (req, res) {
+				res.send('GET galaxy by name ' + req.params.galaxyName);
+			});
+
+			app.namespace('/region', function () {
+				app.get('/', function (req, res) {
+					res.send('GET galaxy\'s regions for ' + req.params.galaxyName);
+				});
+
+				app.namespace('/:regionName', function () {
+					app.get('/', function (req, res) {
+						res.send('GET region by name ' + req.params.regionName + ' in galaxy ' + req.params.galaxyName);
+					});
+				});
+			});
+		});
+	});
+});
+/*
+app.namespace('/account/:id', function () {
+	app.get('/', function(req, res) {
+		res.send('GET account ' + req.params.id);
+	});
+
+	app.get('/edit', function(req, res){
+		res.send('GET forum ' + req.params.id + ' edit page');
+	});
+
+	app.del('/', function(req, res){
+		res.send('DELETE account ' + req.params.id);
+	});
+});
+*/
+/*
+var account = require('./lib/account');
+
+account.initialize(app);
+*/
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 });
