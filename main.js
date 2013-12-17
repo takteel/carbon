@@ -31,7 +31,10 @@ if (process.argv.length > 2) {
 
 var planets = [];
 
-planets.push({ id:123, name:'toto' });
+planets.push({
+	id: 123,
+	name: 'PF-346'
+});
 
 planets.findOne = function (params) {
 	var properties = Object.getOwnPropertyNames(params);
@@ -44,6 +47,7 @@ planets.findOne = function (params) {
 			var propertyName = properties[propertyIt];
 
 			if (!(propertyName in element) || (params[propertyName] !== element[propertyName])) {
+				console.log('FAILURE', element, propertyName);
 				match = false;
 				break ;
 			}
@@ -80,22 +84,38 @@ app.get('/', function(req, res) {
 	res.render('index', { title: 'index', routes: app.routes.get });
 });
 
-app.get('/planet/', function(req, res) {
-	res.format({
-		'text/plain': function () {
-		},
-		'text/html': function () {
-			console.log(req.params);
-			res.render('planets-list', { title: 'planets', planets: planets });
-		},
-		'application/json': function () {
-			res.json(planets);
-		}
+var OBJECT_ID = /^[0-9a-f]{24}$/;
+var OBJECT_NAME = /^[a-zA-Z][a-zA-Z0-9\-]{3,14}[a-zA-Z0-9]$/;
+
+app.param('planetId', OBJECT_ID);
+app.param('planetName', OBJECT_NAME);
+
+app.get('/planets/:planetName/', function (req, res) {
+	var planet = planets.findOne({ name: req.params.planetName[0] });
+
+	if (!planet) {
+		throw Error('Can not find object ' + req.params.planetName);
+	}
+
+	res.send('GET planet ' + req.params.planetName);
+});
+
+app.namespace('/api/planets', function () {
+	app.get('/', function (req, res) {
+		// res.send(util.inspect(req));
+		res.send('GET all planets');
 	});
+
+	app.namespace('/:planetName', function () {
+		app.get('/', function (req, res, next) {
+			// res.send(util.inspect(req));
+			res.send('GET planet ' + req.params.planetName);
+		});
+	})
 });
 
 /*
-app.param(':id', /^\d+$/);
+app.param('id', /^\d+$/);
 app.get('/planet/:id', function(req, res) {
 	var planet = planets.findOne({ id: parseInt(req.params.id[0]) });
 	console.log(planet);
@@ -111,11 +131,22 @@ app.get('/planet/:id', function(req, res) {
 		}
 	});
 });
+app.get('/planet/', function(req, res) {
+	res.format({
+		'text/plain': function () {
+		},
+		'text/html': function () {
+			console.log(req.params);
+			res.render('planets-list', { title: 'planets', planets: planets });
+		},
+		'application/json': function () {
+			res.json(planets);
+		}
+	});
+});
 */
 
-var OBJECT_ID = /^[0-9a-f]{24}$/;
-var OBJECT_NAME = /^[a-zA-Z][a-zA-Z0-9_\-]{3,14}[a-zA-Z0-9]$/;
-
+/*
 var CHARACTER_NAME = /^[A-Z][a-zA-Z0-9]{4,14}[a-zA-Z0-9]$/;
 
 app.param('characterName', CHARACTER_NAME);
@@ -128,7 +159,9 @@ app.namespace('/character/', function () {
 		res.send('DELETE character ' + req.params.characterName);
 	});
 });
+*/
 
+/*
 var GALAXY_NAME = /^[A-Z1-9][A-Z1-9\-]{3,14}[A-Z1-9]$/;
 var REGION_NAME = /^[A-Z1-9][A-Z1-9\-]{3,14}[A-Z1-9]$/;
 
@@ -136,30 +169,32 @@ app.param('galaxyName', GALAXY_NAME);
 app.param('regionName', REGION_NAME);
 
 app.namespace('/api', function () {
-	app.namespace('/galaxy', function () {
+	app.namespace('/galaxies', function () {
 		app.get('/', function (req, res) {
 			res.send('GET all galaxies');
 		});
 
 		app.namespace('/:galaxyName', function () {
 			app.get('/', function (req, res) {
-				res.send('GET galaxy by name ' + req.params.galaxyName);
+				res.send('GET galaxy by name ' + req.params.galaxyName[0]);
 			});
 
-			app.namespace('/region', function () {
+			app.namespace('/regions', function () {
 				app.get('/', function (req, res) {
-					res.send('GET galaxy\'s regions for ' + req.params.galaxyName);
+					res.send('GET galaxy\'s regions for ' + req.params.galaxyName[0]);
 				});
 
 				app.namespace('/:regionName', function () {
 					app.get('/', function (req, res) {
-						res.send('GET region by name ' + req.params.regionName + ' in galaxy ' + req.params.galaxyName);
+						res.send('GET region by name ' + req.params.regionName[0] + ' in galaxy ' + req.params.galaxyName[0]);
 					});
 				});
 			});
 		});
 	});
 });
+*/
+
 /*
 app.namespace('/account/:id', function () {
 	app.get('/', function(req, res) {
