@@ -44,7 +44,10 @@
   "devDependencies": {
     "nodemon": "~0.7.10",
     "mocha": "~1.15.1",
-    "should": "~2.1.1"
+    "should": "~2.1.1",
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "engines": {
     "node": "~0.10.21",
